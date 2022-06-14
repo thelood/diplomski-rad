@@ -14,12 +14,12 @@ async function main () {
 
   const config = await loadJsonFile('config.json')
 
-  const [idListener] = await Promise.all([
-    createFromJSON(await loadJsonFile(config.peerId))
+  const [listenerPeerId] = await Promise.all([
+    createFromJSON(await loadJsonFile(config.listenerNode))
   ])
 
   const listenerNode = await createLibp2p({
-    peerId: idListener,
+    peerId: listenerPeerId,
     addresses: {
       listen: [new Multiaddr(`${config.relayNodeAddress}/p2p-circuit`)]
     },

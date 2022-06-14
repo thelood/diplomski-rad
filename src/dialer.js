@@ -3,7 +3,6 @@ import { WebSockets } from '@libp2p/websockets'
 import { Noise } from '@chainsafe/libp2p-noise'
 import { Mplex } from '@libp2p/mplex'
 import { KadDHT } from '@libp2p/kad-dht'
-import { FloodSub } from '@libp2p/floodsub'
 import { Multiaddr } from '@multiformats/multiaddr'
 import { createFromJSON } from '@libp2p/peer-id-factory'
 import { loadJsonFile } from 'load-json-file';
@@ -14,13 +13,13 @@ async function main () {
   
   const config = await loadJsonFile('config.json')
   
-  const [idDialer, idListener] = await Promise.all([
-    createFromJSON(await loadJsonFile(config.peerId)),
-    createFromJSON(await loadJsonFile(config.remotePeer))
+  const [dialerPeerId, listenerPeerId] = await Promise.all([
+    createFromJSON(await loadJsonFile(config.dialerNode)),
+    createFromJSON(await loadJsonFile(config.listenerNode))
   ])
 
   const dialerNode = await createLibp2p({
-    peerId: idDialer,
+    peerId: dialerPeerId,
     addresses: {
       listen: [new Multiaddr(`${config.relayNodeAddress}/p2p-circuit`)]
     },
@@ -34,7 +33,6 @@ async function main () {
       new Mplex()
     ],
     dht: new KadDHT(),
-    pubsub: new FloodSub(),
     relay: {
       enabled: true,
       autoRelay: {
@@ -45,20 +43,20 @@ async function main () {
   })
 
   await dialerNode.start()
-  console.log(`[Diarler Node] started with id ${dialerNode.peerId.toString()}`)
+  console.log(`[Dialer Node] started with id ${dialerNode.peerId.toString()}`)
 
   const relayNodeConnection = await dialerNode.dial(config.relayNodeAddress)
   console.log(`Connected to the auto relay node via ${relayNodeConnection.remoteAddr.toString()}`)
-  
-  const listenerMultiaddr = new Array(new Multiaddr(config.relayNodeAddress + '/p2p-circuit/p2p/' + config.remotePeerId));
-  dialerNode.peerStore.addressBook.set(idListener, listenerMultiaddr);
+
+  const listenerMultiaddr = new Array(new Multiaddr(config.relayNodeAddress + '/p2p-circuit/p2p/' + listenerPeerId));
+  dialerNode.peerStore.addressBook.set(listenerPeerId, listenerMultiaddr);
   
   console.log('Dialer ready, listening on:')
   dialerNode.getMultiaddrs().forEach((ma) => {
     console.log(ma.toString())
   })
 
-  const listenerMa = new Multiaddr(config.relayNodeAddress + '/p2p-circuit/p2p/' + config.remotePeerId.toString())
+  const listenerMa = new Multiaddr(config.relayNodeAddress + '/p2p-circuit/p2p/' + listenerPeerId)
   const { stream } = await dialerNode.dialProtocol(listenerMa, '/chat/1.0.0')
   
   dialerNode.connectionManager.addEventListener('peer:connect', (evt) => {
