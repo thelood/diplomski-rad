@@ -21,6 +21,6 @@
     "delay": "^5.0.0",
     "libp2p": "^0.37.0",
     "libp2p-gossipsub": "^0.13.0",
-    "uint8arrays": "^3.0.0"
+    "load-json-file": "^7.0.1"
   }
 }
