@@ -1,12 +1,12 @@
 import { createLibp2p } from 'libp2p'
 import { WebSockets } from '@libp2p/websockets'
+import { TCP } from '@libp2p/tcp'
 import { Noise } from '@chainsafe/libp2p-noise'
 import { Mplex } from '@libp2p/mplex'
 import { KadDHT } from '@libp2p/kad-dht'
 import { Multiaddr } from '@multiformats/multiaddr'
 import { createFromJSON } from '@libp2p/peer-id-factory'
 import { loadJsonFile } from 'load-json-file';
-
 import { stdinToStream, streamToConsole } from './helpers/stream.js'
 
 async function main () {
@@ -24,7 +24,8 @@ async function main () {
       listen: [new Multiaddr(`${config.relayNodeAddress}/p2p-circuit`)]
     },
     transports: [
-      new WebSockets()
+      new WebSockets(),
+      new TCP()
     ],
     connectionEncryption: [
       new Noise()
@@ -65,16 +66,10 @@ async function main () {
     console.log('connected to: ', connection.remotePeer.toString())
   })
 
-  await dialerNode.handle('/chat/1.0.0', async ({ stream }) => {
-    stdinToStream(stream)
-    streamToConsole(stream)
-  })
-
   console.log('Type a message and see what happens')
 
   stdinToStream(stream)
   streamToConsole(stream)
-
 }
 
 main()

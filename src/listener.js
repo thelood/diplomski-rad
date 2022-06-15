@@ -1,16 +1,15 @@
 import { createLibp2p } from 'libp2p'
 import { WebSockets } from '@libp2p/websockets'
+import { TCP } from '@libp2p/tcp'
 import { Noise } from '@chainsafe/libp2p-noise'
 import { Mplex } from '@libp2p/mplex'
 import { KadDHT } from '@libp2p/kad-dht'
 import { Multiaddr } from '@multiformats/multiaddr'
 import { createFromJSON } from '@libp2p/peer-id-factory'
 import { loadJsonFile } from 'load-json-file';
-
 import { stdinToStream, streamToConsole } from './helpers/stream.js'
 
 async function main () {
-
   const config = await loadJsonFile('config.json')
 
   const [listenerPeerId] = await Promise.all([
@@ -24,6 +23,7 @@ async function main () {
     },
     transports: [
       new WebSockets(),
+      new TCP()
     ],
     streamMuxers: [
         new Mplex()
@@ -59,7 +59,6 @@ async function main () {
   })
 
   console.log('Listener ready, listening on:')
-
   listenerNode.getMultiaddrs().forEach((ma) => {
     console.log(ma.toString())
   })
