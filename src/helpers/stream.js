@@ -13,7 +13,7 @@ export function stdinToStream(stream) {
     // Read from stdin (the source)
     process.stdin,
     // Turn strings into buffers
-    (source) => map(source, (string) => uint8ArrayFromString(string)),
+    (source) => map(source, (string) => uint8ArrayFromString(string.replace('\n', ''))),
     // Encode with length prefix (so receiving side knows how much data is coming)
     lp.encode(),
     // Write to the stream (the sink)
@@ -34,7 +34,7 @@ export function streamToConsole(stream) {
       // For each chunk of data
       for await (const msg of source) {
         // Output the data as a utf8 string
-        console.log('> ' + msg.toString().replace('\n', ''))
+        console.log('[Recieved]: ' + msg.toString().replace('\n', ''))
       }
     }
   )

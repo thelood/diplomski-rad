@@ -59,6 +59,7 @@ async function main () {
   const listenerMa = new Multiaddr(config.relayNodeAddress + '/p2p-circuit/p2p/' + listenerPeerId)
   const { stream } = await dialerNode.dialProtocol(listenerMa, '/chat/1.0.0')
   
+  // Log a message when a remote peer connects to us
   dialerNode.connectionManager.addEventListener('peer:connect', (evt) => {
     const connection = evt.detail
     console.log('connected to: ', connection.remotePeer.toString())
@@ -69,7 +70,6 @@ async function main () {
     streamToConsole(stream)
   })
 
-  console.log('Dialer dialed to listener on protocol: /chat/1.0.0')
   console.log('Type a message and see what happens')
 
   stdinToStream(stream)

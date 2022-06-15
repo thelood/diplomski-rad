@@ -3,7 +3,6 @@ import { WebSockets } from '@libp2p/websockets'
 import { Noise } from '@chainsafe/libp2p-noise'
 import { Mplex } from '@libp2p/mplex'
 import { KadDHT } from '@libp2p/kad-dht'
-import { FloodSub } from '@libp2p/floodsub'
 import { Multiaddr } from '@multiformats/multiaddr'
 import { createFromJSON } from '@libp2p/peer-id-factory'
 import { loadJsonFile } from 'load-json-file';
@@ -33,7 +32,6 @@ async function main () {
       new Noise()
     ],
     dht: new KadDHT(),
-    pubsub: new FloodSub(),
     relay: {
       enabled: true,
       autoRelay: {
@@ -44,10 +42,10 @@ async function main () {
   })
   
   await listenerNode.start()
-  console.log(`Node started with id ${listenerNode.peerId.toString()}`)
+  console.log(`[Listener Node] started with id ${listenerNode.peerId.toString()}`)
 
   const relayNodeConnection = await listenerNode.dial(config.relayNodeAddress)
-  console.log(`Connected to the HOP relay ${relayNodeConnection.remotePeer.toString()}`)
+  console.log(`Connected to the relay node [${relayNodeConnection.remotePeer.toString()}]`)
 
   listenerNode.connectionManager.addEventListener('peer:connect', (evt) => {
     const connection = evt.detail
@@ -55,11 +53,13 @@ async function main () {
   })
 
   await listenerNode.handle('/chat/1.0.0', async ({ stream }) => {
+    console.log('Type a message and see what happens')
     stdinToStream(stream)
     streamToConsole(stream)
   })
 
   console.log('Listener ready, listening on:')
+
   listenerNode.getMultiaddrs().forEach((ma) => {
     console.log(ma.toString())
   })
