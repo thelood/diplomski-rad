@@ -1,5 +1,5 @@
 {
     "listenerNode" : "./peers/peer-id-listener.json",
     "dialerNode" : "./peers/peer-id-dialer.json",
-    "relayNodeAddress" : "/ip4/52.174.133.14/tcp/15003/ws/p2p/QmP6R3B6erjref4boX4VrxoNgvPc92DiV7Jtfmkg6UVeAP"
+    "relayNodeAddress" : "/ip4/20.101.50.219/tcp/15003/ws/p2p/QmP6R3B6erjref4boX4VrxoNgvPc92DiV7Jtfmkg6UVeAP"
 }

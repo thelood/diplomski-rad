@@ -2,7 +2,7 @@
 
 https://github.com/libp2p/js-libp2p-relay-server
 
-Relay node is up and running on Azure VM. It's IP address is publicly available and can be found on: 52.174.133.14
+Relay node is up and running on Azure VM. It's IP address is publicly available and can be found on: 20.101.50.219
 
 Use ```libp2p-relay-server --peerId ./relay-server-id.json``` to start relay node.
 
